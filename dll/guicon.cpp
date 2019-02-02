@@ -7,6 +7,7 @@
 
 #include <Windows.h>
 #include "guicon.h"
+#include "stdafx.h"
 #include <stdio.h>
 #include <fcntl.h>
 #include <io.h>
