@@ -85,14 +85,52 @@ bool unloadDLL(HANDLE hProcess)
 	return callApiInRemoteContext(hProcess, "kernel32.dll", "FreeLibrary", hDLL, 0, rc) && rc;
 }
 
+HHOOK hook;
+LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	return CallNextHookEx(hook, nCode, wParam, lParam);
+}
+
+char *GetErrorMessage()
+{
+	static char msgbuf[1024];
+	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+	return msgbuf;
+}
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	/* Construct the full path to the DLL */
 	int dllNameLen = GetModuleFileName(NULL, dllName, sizeof(dllName));
-	if (!dllNameLen) {
+	strcpy(dllName + dllNameLen - 3, "dll");
+	HMODULE dll = LoadLibrary(dllName);
+	if (!dll) {
 		MessageBox(0, "Could not find the companion DLL. Make sure it's in the same directory as the EXE and has the same name.", appName, MB_ICONEXCLAMATION);
 		return 1;
 	}
+
+	HWND hTraktorWindow;
+	while (!(hTraktorWindow = FindWindow(NULL, "Traktor")))
+		Sleep(100);
+
+	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "EntryHook");
+	DWORD idTraktorUIThread = GetWindowThreadProcessId(hTraktorWindow, NULL);
+	HHOOK hook = SetWindowsHookEx(WH_GETMESSAGE, hookProc, dll, idTraktorUIThread);
+	if (!hook) {
+		MessageBox(0, "Failed to hook Traktor UI thread", GetErrorMessage(), MB_ICONEXCLAMATION);
+		return 1;
+	}
+	PostMessage(hTraktorWindow, WM_NULL, 0, 0);
+
+	MessageBox(0, "Yup", appName, MB_ICONINFORMATION);
+
+	if (0xBABE != SendMessage(hTraktorWindow, WM_APP, 0xCAFE, 0xDEADBEEF))
+		MessageBox(0, "Failed to unhook", "Yikes", MB_ICONEXCLAMATION);
+	UnhookWindowsHookEx(hook);
+
+	return 0;
+
+
 	strcpy(dllName + dllNameLen - 3, "dll");
 
 	HANDLE hProcess, hThread;
