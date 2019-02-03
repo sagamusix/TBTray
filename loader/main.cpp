@@ -43,7 +43,7 @@ HWND getTraktor(LPSTR lpCmdLine)
 		/* Try the constructed path first; if that doesn't work try the current directory */
 		if (!CreateProcess(dllName, lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi) && 
 			!CreateProcess("Traktor.exe", lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi)) {
-			MessageBox(0, "Failed to start Traktor.exe!\n\nMake sure traktor_touch.exe and traktor_touch.dll are in the same directory as Traktor.exe", appName, MB_ICONEXCLAMATION);
+			MessageBox(0, "Failed to start Traktor.exe!\n\nMake sure traktor-touch.exe and traktor-touch.dll are in the same directory as Traktor.exe", appName, MB_ICONEXCLAMATION);
 			ExitProcess(1);
 		}
 	}
