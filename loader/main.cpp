@@ -56,12 +56,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	HWND hTraktorWindow = getTraktor(lpCmdLine);
 	DWORD idTraktorUIThread  = GetWindowThreadProcessId(hTraktorWindow, NULL);
-	HHOOK hook = SetWindowsHookEx(WH_GETMESSAGE, hookProc, dll, idTraktorUIThread);
+	HHOOK hook = SetWindowsHookEx(WH_CALLWNDPROC, hookProc, dll, idTraktorUIThread);
 	if (!hook) {
 		MessageBox(0, "Failed to hook Traktor UI thread", GetErrorMessage(), MB_ICONEXCLAMATION);
 		return 1;
 	}
-	PostMessage(hTraktorWindow, WM_NULL, 0, 0);
+	FreeLibrary(dll);
+	SendMessage(hTraktorWindow, WM_NULL, 0, 0);
 
 #ifdef _DEBUG
 	MessageBox(0, "DLL injected - hit OK to unload", appName, MB_ICONINFORMATION);
