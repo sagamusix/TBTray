@@ -8,7 +8,8 @@
  */
 
 #define _CRT_SECURE_NO_WARNINGS    
-#include "windows.h"
+#include <windows.h>
+#include <Shlwapi.h>
 
 char dllName[2048];
 const char *appName = "Traktor Touch";
@@ -31,11 +32,17 @@ HWND getTraktor(LPSTR lpCmdLine)
 		/* Launch Traktor ourselves */
 		PROCESS_INFORMATION pi;
 		STARTUPINFOA si;
-
 		ZeroMemory(&si, sizeof(si));
 		ZeroMemory(&pi, sizeof(pi));
 		si.cb = sizeof(si);
-		if (!CreateProcess("Traktor.exe", lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi)) {
+
+		/* Construct the name of Traktor.exe in the same directory as the DLL */
+		PathRemoveFileSpec(dllName);
+		lstrcat(dllName, "\\Traktor.exe");
+
+		/* Try the constructed path first; if that doesn't work try the current directory */
+		if (!CreateProcess(dllName, lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi) && 
+			!CreateProcess("Traktor.exe", lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi)) {
 			MessageBox(0, "Failed to start Traktor.exe!\n\nMake sure traktor_touch.exe and traktor_touch.dll are in the same directory as Traktor.exe", appName, MB_ICONEXCLAMATION);
 			ExitProcess(1);
 		}
