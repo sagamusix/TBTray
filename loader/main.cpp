@@ -1,5 +1,5 @@
 /*
- * Traktor Touch loader
+ * Traktouch loader
  *
  * Finds the active Traktor window, or starts Traktor if there is no window yet,
  * then loads the companion DLL into Traktor via a Windows hook.
@@ -12,7 +12,7 @@
 #include <Shlwapi.h>
 
 char dllName[2048];
-const char *appName = "Traktor Touch";
+const char *appName = "Traktouch";
 
 char *GetErrorMessage()
 {
@@ -43,7 +43,7 @@ HWND getTraktor(LPSTR lpCmdLine)
 		/* Try the constructed path first; if that doesn't work try the current directory */
 		if (!CreateProcess(dllName, lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi) && 
 			!CreateProcess("Traktor.exe", lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi)) {
-			MessageBox(0, "Failed to start Traktor.exe!\n\nMake sure traktor-touch.exe and traktor-touch.dll are in the same directory as Traktor.exe", appName, MB_ICONEXCLAMATION);
+			MessageBox(0, "Failed to start Traktor.exe!\n\nMake sure traktouch.exe and traktouch.dll are in the same directory as Traktor.exe", appName, MB_ICONEXCLAMATION);
 			ExitProcess(1);
 		}
 	}
