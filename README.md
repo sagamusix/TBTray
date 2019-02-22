@@ -1,31 +1,28 @@
-Traktouch - improve Traktor touchscreen usability
-=================================================
+Traktouch - make Traktor useable with a touch screen
+====================================================
 
 1. What problem does this solve?
 --------------------------------
 
 Native Instruments' Traktor is a wonderful DJing software and I love it to bits.
-My new Windows laptop has a touch screen, so I was looking forward to operating
+And my Windows laptop has a touch screen, so I was looking forward to operating
 Traktor's knobs and buttons by touching them in addition to using my DJ controller.
-Unfortunately, so far Traktor does not support touch screens, so all I get is 
-Windows' mouse emulation, which brings about two problems:
 
- 1. When I touch a knob and don't move it right away, Windows thinks I want to 
-    perform a right click and my touch is lost - I have to lift my finger and try
-	again.
- 2. Even if I move my finger right away and don't create a right click, knobs and
-    sliders don't respond as expected: I move my finger away from the touch position 
-	by a bit, and the the slider quickly moves all the way into that direction.
- 
-Both of these problems are corrected by Traktouch. I can touch a knob and not move my 
-finger for as long as I want, and once I move it, the knob moves as expected and 
-stops when I stop moving my finger.
+Unfortunately Traktor does not support touch screens so far, so I can only go through
+Windows' mouse emulation, and that's no good for several reasons:
 
-As an added bonus, the track list can be scrolled by dragging two fingers across the
-Traktor window. You can drag anywhere, you will always scroll the track list. There is
-some acceleration built into the scrolling too, so you can go through tracks slowly
-with slight finger movements, but also jump halfway across your track collection with
-quick movements. Just try it out :)
+ 1. When I touch something and keep my finger where it is, Windows eventually emulates
+    a right click instead of clicking and dragging and my touch is lost.
+ 2. Even if I get Windows to emulate click-and-drag, sliders and knobs don't respond
+    as expected - they quickly move all the way to one end of their scale.
+ 3. Scrolling the track list is super fiddly without a mouse wheel.
+
+Traktouch solves all these problems for you:
+
+ 1. Buttons, knobs and faders respond to touch as you would intuitively expect.
+ 2. Dragging two fingers across the Traktor window will scroll the track list, 
+    no matter where you touch. There is also some acceleration built into this,
+	so quick scroll movements will take you VERY far.
 
 
 2. How to use Traktouch
@@ -36,49 +33,32 @@ quick movements. Just try it out :)
  2. Start Traktor by running traktouch.exe instead of Traktor.exe. 
     Traktor will start and be magically changed :)
 
-That's all. Traktouch does _not_ modify Traktor.exe in any way; if you want an 
-unmodified Traktor you can always run Traktor.exe as usual. Myself, I simply changed 
-Traktor's start menu shortcut to launch traktouch.exe.
+That's all. Traktouch does _not_ modify Traktor.exe in any way, it just modifies the
+running Traktor instance in memory. If you want an unmodified Traktor you can always
+run Traktor.exe as usual.
 
-There is another way of running: If Traktor is already running when you start 
-traktouch.exe, the running instance of Traktor will be modified. But launching
-Traktor through Traktouch is one less program to start :)
+Myself, I simply changed Traktor's start menu shortcut to launch traktouch.exe.
 
 
 3. How does it work?
 --------------------
 
-Windows programs have some control over the way Windows turns touch interactions
-into mouse events. Traktor does not natively use these options, so Traktouch inserts 
-some extra code into the loaded Traktor process that will tell Windows to disable
-right-click emulation for the Traktor window.
+The short version is that Traktouch intercepts some of the communication between
+Windows and Traktor, modifying touch-based mouse events coming down from Windows
+and monitoring some of Traktor's reactions to those events. It also changes some
+details of how Windows turns touch interaction into mouse events on Traktor's behalf.
 
-Also, Traktor implements its knobs and sliders in the assumption that you're using a 
-mouse which is a relative input device: Whenever you move the mouse while holding the
-button down on a control, the cursor moves by a few pixels, and Traktor moves the
-control by that distance and moves the cursor back to the location where you first
-clicked. This may sound silly, but it's necessary to make sure you get infinite
-movement on the controls - otherwise the mouse cursor would eventually get stuck at the
-edge of the screen and you couldn't move your control any further.
+The longer version is that Traktouch:
+ * Tells Windows to disable right-click emulation for Traktor's main window.
+ * Disables all special touch gestures except panning (two-finger dragging),
+   again only for Traktor's window.
+ * Intercepts Traktor's attempts to move the mouse cursor while dragging a knobs
+   or slider, and internally stores an offset value to _pretend_ the mouse cursor
+   got moved.
+ * Turns pan gestures into fake mouse wheel events, with acceleration.
+ * Plus some other minor event munging to make slider/knob control smooth and reliable.
 
-(You don't see this because Traktor turns off the mouse cursor while it's doing this,
-but you'll notice that when you release the mouse button, the cursor reappears at the
-same place where you pressed the button.)
-
-The downside to this technique is that you can move a mouse cursor around the screen
-under software control, but not the user's finger ;) So every time Traktor moves the
-cursor back to the original point, your finger stays put and Traktor will think that 
-the mouse moved, so it moves the control and puts the cursor back, but your finger is
-still where it's at so Traktor thinks you moved it yet again, and so on.
-
-Traktouch fixes this by intercepting Traktor's attempts to move the mouse cursor and
-storing a correction value internally that it applies to all mouse position reported
-back to Traktor. In a way, it emulates moving the user's finger so that Traktor's
-approach to infinite mouse movement works with touch interaction too.
-
-Last, tracklist scrolling is done by telling Windows to interpret "pan" gestures for
-Traktor's window, monitoring those gestures and turning them into virtual mouse wheel
-movements for Traktor. Voila, tracklist scrolling!
+For the very long version, the source code is at https://github.com/dop3j0e/traktouch :)
 
 
 4. Can I safely use Traktouch during my live gig?
@@ -121,3 +101,31 @@ Instruments would need to implement support for it in Traktor itself.
 
 Not from me - but you're welcome to steal ideas from Traktouch if you'd like to make a
 Mac equivalent.
+
+
+8. I like to tweak stuff, do you have any configuration settings?
+-----------------------------------------------------------------
+
+If the default behavior of Traktouch isn't right for you, there are some things you can
+configure by creating a file called traktouch.ini and placing it in the same directory
+as traktouch.exe. Here's an example file with default settings:
+
+; Settings for mouse wheel emulation
+[Scroll]
+
+; Basic scale factor for scroll movements. Increase to scroll faster, decrease to scroll slower.
+Scale=10
+
+; Below a certain scroll speed, no acceleration is applied. Zero gives you immediate acceleration,
+; a very large value like 1000 will give you no acceleration at all.
+AccelDeadZone=3
+; Once acceleration is applied, this specifies how much faster you go. Minimum value is 100,
+; less than 100 will actually make scrolling slower if you go faster ;)
+AccelExponent=200
+
+; Track list scrolling is achieved by generating mouse wheel events at a virtual mouse
+; position inside the track list. The following two settings define the offset of that
+; position, measured in pixels from the bottom right corner of Traktor's window.
+; If scrolling does not work for you, you can try tweaking these values to match your Traktor layout.
+TrackListOffsetX=20
+TrackListOffsetY=80
