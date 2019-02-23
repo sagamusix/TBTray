@@ -114,7 +114,7 @@ as traktouch.exe. Here's an example file with default settings:
 [Scroll]
 
 ; Basic scale factor for scroll movements. Increase to scroll faster, decrease to scroll slower.
-Scale=10
+Scale=6
 
 ; Below a certain scroll speed, no acceleration is applied. Zero gives you immediate acceleration,
 ; a very large value like 1000 will give you no acceleration at all.
@@ -129,3 +129,12 @@ AccelExponent=200
 ; If scrolling does not work for you, you can try tweaking these values to match your Traktor layout.
 TrackListOffsetX=20
 TrackListOffsetY=80
+
+; Settings for touch emulation
+[Touch]
+
+; Experiments indicate that touching the Stripe doesn't work as expected unless Traktouch delays the
+; emulated click events for a short time. This delay causes a bit of latency between a touch and
+; Traktor's reaction. If you want to get rid of that latency, or touch interaction is behaving
+; weirdly for you, and you don't need the Stripe, you can turn off the delay by setting this to 0.
+DeferButtons=2
