@@ -1,7 +1,7 @@
 Traktouch - make Traktor useable with a touch screen
 ====================================================
 
-1. What problem does this solve?
+What problem does this solve?
 --------------------------------
 
 Native Instruments' Traktor is a wonderful DJing software and I love it to bits.
@@ -25,7 +25,7 @@ Traktouch solves all these problems for you:
 	so quick scroll movements will take you VERY far.
 
 
-2. How to use Traktouch
+How to use Traktouch
 -----------------------
 
  1. Unzip traktouch.exe and traktouch.dll into your Traktor install directory, 
@@ -40,7 +40,7 @@ run Traktor.exe as usual.
 Myself, I simply changed Traktor's start menu shortcut to launch traktouch.exe.
 
 
-3. How does it work?
+How does it work?
 --------------------
 
 The short version is that Traktouch intercepts some of the communication between
@@ -61,7 +61,7 @@ The longer version is that Traktouch:
 For the very long version, the source code is at https://github.com/dop3j0e/traktouch :)
 
 
-4. Can I safely use Traktouch during my live gig?
+Can I safely use Traktouch during my live gig?
 -------------------------------------------------
 
 Time will tell.
@@ -76,7 +76,7 @@ DJing routine before you hit the club on a Friday night. If it doesn't crash dur
 the test runs, I'm fairly confident it won't crash during the gig.
 
 
-5. How are you going to support this tool?
+How are you going to support this tool?
 ------------------------------------------
 
 As time allows.
@@ -88,7 +88,7 @@ and if you're running into problems, I'll happily take issues on GitHub, I just 
 guarantee fast resolution.
 
 
-6. Does Traktouch support manipulating multiple controls at the same time?
+Does Traktouch support manipulating multiple controls at the same time?
 --------------------------------------------------------------------------
 
 No, it's still just a mouse emulation and therefore only allows touching one control at
@@ -96,20 +96,21 @@ a time. I don't think real multi-touch can be bolted onto Traktor from the side,
 Instruments would need to implement support for it in Traktor itself.
 
 
-7. Will there be a Mac version of this?
+Will there be a Mac version of this?
 ---------------------------------------
 
 Not from me - but you're welcome to steal ideas from Traktouch if you'd like to make a
 Mac equivalent.
 
 
-8. I like to tweak stuff, do you have any configuration settings?
+I like to tweak stuff, do you have any configuration settings?
 -----------------------------------------------------------------
 
 If the default behavior of Traktouch isn't right for you, there are some things you can
 configure by creating a file called traktouch.ini and placing it in the same directory
 as traktouch.exe. Here's an example file with default settings:
 
+<pre>
 ; Settings for mouse wheel emulation
 [Scroll]
 
@@ -138,3 +139,4 @@ TrackListOffsetY=80
 ; Traktor's reaction. If you want to get rid of that latency, or touch interaction is behaving
 ; weirdly for you, and you don't need the Stripe, you can turn off the delay by setting this to 0.
 DeferButtons=2
+</pre>
