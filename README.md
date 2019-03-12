@@ -140,3 +140,17 @@ TrackListOffsetY=80
 ; weirdly for you, and you don't need the Stripe, you can turn off the delay by setting this to 0.
 DeferButtons=2
 </pre>
+
+
+Acknowledgements
+----------------
+
+Traktouch would not be possible without the [mhook] library by Marton Anka, which it uses to 
+intercept some of the Windows API calls.
+
+The first implementations took a lot of ideas from Fabian Giesen's [kkapture]. The implementation
+has diverged significantly from that first draft, but without kkapture I wouldn't have known where
+to start.
+
+[mhook]: http://codefromthe70s.org/mhook24.aspx
+[kkapture]: https://github.com/rygorous/kkapture
