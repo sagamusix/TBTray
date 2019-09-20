@@ -69,7 +69,7 @@ static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
 	// Construct the DLL filename from our own filename, then attempt to load the DLL and find the entry hook
 	TCHAR dllName[1024];
 	int dllNameLen = GetModuleFileName(nullptr, dllName, sizeof(dllName));
-	strcpy(dllName + dllNameLen - 3, "dll");
+	_tcscpy(dllName + dllNameLen - 3, _T("dll"));
 	HMODULE dll = LoadLibrary(dllName);
 	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "_EntryHook@12");
 	if(!dll || !hookProc)
