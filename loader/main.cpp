@@ -55,7 +55,6 @@ static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 	return TRUE; // continue
 }
 
-
 static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
 {
 	static HWND hwnd = nullptr;
