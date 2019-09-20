@@ -68,7 +68,7 @@ static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
 
 	// Construct the DLL filename from our own filename, then attempt to load the DLL and find the entry hook
 	TCHAR dllName[1024];
-	int dllNameLen = GetModuleFileName(nullptr, dllName, sizeof(dllName));
+	int dllNameLen = GetModuleFileName(nullptr, dllName, _countof(dllName));
 	_tcscpy(dllName + dllNameLen - 3, _T("dll"));
 	HMODULE dll = LoadLibrary(dllName);
 	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "_EntryHook@12");
@@ -95,6 +95,33 @@ static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	int argc = 0;
+	auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (argc > 1 && !wcscmp(argv[1], L"register"))
+	{
+		TCHAR path[1024];
+		auto len = GetModuleFileName(nullptr, path, _countof(path));
+
+		HKEY hkey = nullptr;
+		RegCreateKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
+		if (hkey)
+		{
+			RegSetValueEx(hkey, _T("TBTray"), 0, REG_SZ, (BYTE *)path, (len + 1) * 2);
+			RegCloseKey(hkey);
+		}
+	}
+	else if (argc > 1 && !wcscmp(argv[1], L"unregister"))
+	{
+		HKEY hkey = nullptr;
+		RegOpenKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
+		if (hkey)
+		{
+			RegDeleteValue(hkey, _T("TBTray"));
+			RegCloseKey(hkey);
+		}
+	}
+
+
 	SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN);
 	auto timerID = SetTimer(nullptr, 1, 1000, TimerProc);
 

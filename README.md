@@ -17,5 +17,11 @@ How does it work?
 -----------------
 
 The short version is that TBTray intercepts some of the communication between
-Windows and Thunderbird, rejecting window minimiz and close events and instead
+Windows and Thunderbird, rejecting window minimize and close events and instead
 hiding the window and creating a tray icon.
+
+Autostart
+---------
+
+To automatically start TBTray on Windows startup, run `register.cmd`.
+To uninstall, run `unregister.cmd`. 
