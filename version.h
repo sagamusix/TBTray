@@ -1,7 +1,7 @@
 #pragma once
 #define MAJORVER 0
-#define MINORVER 9
-#define FIXVER   1
+#define MINORVER 10
+#define FIXVER   0
 
 #define PRODUCTVER MAJORVER,MINORVER,FIXVER,0
 #define _STR(x) #x
