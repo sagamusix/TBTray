@@ -20,6 +20,18 @@ The short version is that TBTray intercepts some of the communication between
 Windows and Thunderbird, rejecting window minimize and close events and instead
 hiding the window and creating a tray icon.
 
+Halp, how do I quit Thunderbird?
+--------------------------------
+
+Through the File menu.
+
+Is there any sort of configuration?
+-----------------------------------
+
+This program does not come with any options, because it is just supposed to fix
+exactly the problem I had. Please fork the repository if you want the program to
+behave differently. 
+
 Autostart
 ---------
 
