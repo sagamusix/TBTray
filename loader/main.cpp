@@ -20,92 +20,99 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define _CRT_SECURE_NO_WARNINGS    
+#define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
+#include <tchar.h>
 #include <Shlwapi.h>
 
-char dllName[2048];
-const char *appName = "Traktouch";
 
-char *GetErrorMessage()
+TCHAR *GetErrorMessage()
 {
-	static char msgbuf[1024];
-	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+	static TCHAR msgbuf[1024];
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), msgbuf, _countof(msgbuf), nullptr);
 	return msgbuf;
 }
 
-/*
- * Find the active Traktor window, or launch Traktor if no window is found.
- */
-HWND getTraktor(LPSTR lpCmdLine)
+
+static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
-	/* Try to find a running instance of Traktor */
-	HWND hTraktor = FindWindow(NULL, "Traktor");
-	if (!hTraktor) {
-		/* Launch Traktor ourselves */
-		PROCESS_INFORMATION pi;
-		STARTUPINFOA si;
-		ZeroMemory(&si, sizeof(si));
-		ZeroMemory(&pi, sizeof(pi));
-		si.cb = sizeof(si);
-
-		/* Construct the name of Traktor.exe in the same directory as the DLL */
-		PathRemoveFileSpec(dllName);
-		lstrcat(dllName, "\\Traktor.exe");
-
-		/* Try the constructed path first; if that doesn't work try the current directory */
-		if (!CreateProcess(dllName, lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi) && 
-			!CreateProcess("Traktor.exe", lpCmdLine, NULL, NULL, TRUE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi)) {
-			MessageBox(0, "Failed to start Traktor.exe!\n\nMake sure traktouch.exe and traktouch.dll are in the same directory as Traktor.exe", appName, MB_ICONEXCLAMATION);
-			ExitProcess(1);
+	if(hwnd)
+	{
+		TCHAR name[256] = {};
+		if(::GetClassName(hwnd, name, 256) > 0)
+		{
+			if(!_tcscmp(name, _T("MozillaWindowClass")))
+			{
+				GetWindowText(hwnd, name, 256);
+				if(_tcsstr(name, _T("- Mozilla Thunderbird")))
+				{
+					*reinterpret_cast<HWND *>(lParam) = hwnd;
+					return FALSE; // done
+				}
+			}
 		}
 	}
+	return TRUE; // continue
+}
 
-	/* Wait up to 10s for Traktor to open */
-	for (int timeout = 0; timeout < 100; timeout++) {
-		hTraktor = FindWindow(NULL, "Traktor");
-		if (hTraktor)
-			return hTraktor;
-		Sleep(100);
+
+static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
+{
+	static HWND hwnd = nullptr;
+	if(IsWindow(hwnd))
+		return; // We already hooked it
+
+	hwnd = nullptr;
+	::EnumWindows(&EnumWindowsProc, reinterpret_cast<LPARAM>(&hwnd));
+	if(hwnd == nullptr)
+		return; // Thunderbird is not running
+
+	// Construct the DLL filename from our own filename, then attempt to load the DLL and find the entry hook
+	TCHAR dllName[1024];
+	int dllNameLen = GetModuleFileName(nullptr, dllName, sizeof(dllName));
+	strcpy(dllName + dllNameLen - 3, "dll");
+	HMODULE dll = LoadLibrary(dllName);
+	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "_EntryHook@12");
+	if(!dll || !hookProc)
+	{
+		MessageBox(nullptr, _T("Could not find the companion DLL. Make sure it's in the same directory as the EXE and has the same name."), _T("TBTray"), MB_ICONEXCLAMATION);
+		hwnd = nullptr;
+		return;
 	}
 
-	MessageBox(0, "Traktor main window did not open within 10s, giving up.", appName, MB_ICONEXCLAMATION);
-	ExitProcess(1);
-	return 0;
+	DWORD threadID = GetWindowThreadProcessId(hwnd, nullptr);
+	HHOOK hook = SetWindowsHookEx(WH_CALLWNDPROC, hookProc, dll, threadID);
+	if(!hook)
+	{
+		MessageBox(nullptr, GetErrorMessage(), _T("Failed to hook Thunderbird UI thread"), MB_ICONEXCLAMATION);
+		hwnd = nullptr;
+		return;
+	}
+	FreeLibrary(dll);
+
+	// Send a message to the hooked WindowProc to make sure the DLL install code ran before we exit
+	SendMessage(hwnd, WM_NULL, 0, 0);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	/* Construct the DLL filename from our own filename, then attempt to load the DLL and find the entry hook */
-	int dllNameLen = GetModuleFileName(NULL, dllName, sizeof(dllName));
-	strcpy(dllName + dllNameLen - 3, "dll");
-	HMODULE dll = LoadLibrary(dllName);
-	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "EntryHook");
-	if (!dll || !hookProc) {
-		MessageBox(0, "Could not find the companion DLL. Make sure it's in the same directory as the EXE and has the same name.", appName, MB_ICONEXCLAMATION);
-		return 1;
-	}
+	SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN);
+	auto timerID = SetTimer(nullptr, 1, 1000, TimerProc);
 
-	/* Grab Traktor and install the entry hook */
-	HWND hTraktorWindow = getTraktor(lpCmdLine);
-	DWORD idTraktorUIThread  = GetWindowThreadProcessId(hTraktorWindow, NULL);
-	HHOOK hook = SetWindowsHookEx(WH_CALLWNDPROC, hookProc, dll, idTraktorUIThread);
-	if (!hook) {
-		MessageBox(0, "Failed to hook Traktor UI thread", GetErrorMessage(), MB_ICONEXCLAMATION);
-		return 1;
+	MSG msg;
+	while(::GetMessage(&msg, nullptr, 0, 0))
+	{
+		::TranslateMessage(&msg);
+		::DispatchMessage(&msg);
 	}
-	FreeLibrary(dll);
-
-	/* Send a message to the hooked WindowProc to make sure the DLL install code ran before we exit */
-	SendMessage(hTraktorWindow, WM_NULL, 0, 0);
 
 #ifdef _DEBUG
-	MessageBox(0, "DLL injected - hit OK to unload", appName, MB_ICONINFORMATION);
+	MessageBox(nullptr, _T("DLL injected - hit OK to unload"), _T("TBTray"), MB_ICONINFORMATION);
 
 	/* Tell the DLL to unhook and unload itself */
-	if (0xBABE != SendMessage(hTraktorWindow, WM_APP, 0xCAFE, 0xDEADBEEF))
+	/*if (0xBABE != SendMessage(hTraktorWindow, WM_APP + 9999, 0xCAFE, 0xDEADBEEF))
 		MessageBox(0, "Failed to unhook", "Yikes", MB_ICONEXCLAMATION);
-	UnhookWindowsHookEx(hook);
+	UnhookWindowsHookEx(hook);*/
 #endif
 
 	return 0;

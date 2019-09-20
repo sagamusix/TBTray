@@ -29,21 +29,6 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mhook-lib\mhook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="disasm-lib\cpu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="disasm-lib\disasm.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="disasm-lib\disasm_x86.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="disasm-lib\misc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="guicon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
