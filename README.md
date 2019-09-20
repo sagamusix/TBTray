@@ -16,14 +16,18 @@ this way I didn't have to write most of the boilerplate code.
 How does it work?
 -----------------
 
-The short version is that TBTray intercepts some of the communication between
-Windows and Thunderbird, rejecting window minimize and close events and instead
-hiding the window and creating a tray icon.
+TBTray intercepts some window messages sent to Thunderbird, rejecting window
+minimize and close events and instead hiding the window and creating a tray icon.
+
+To do this, TBTray checks for the presence of the Thunderbird main window, and if
+it finds the window, injects a library into the Thunderbird process to hook into
+the message queue. TBTray keeps running in the background, in case you want to
+restart Thunderbird at some point.
 
 Halp, how do I quit Thunderbird?
 --------------------------------
 
-Through the File menu, or the context menu.
+Through the File menu, or the context menu of the tray icon.
 
 Is there any sort of configuration?
 -----------------------------------
