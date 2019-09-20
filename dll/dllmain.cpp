@@ -60,9 +60,9 @@ static LRESULT CALLBACK TrayIconProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 		ShowWindow(mainHwnd, SW_SHOW);
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 		if (uMsg == WM_COMMAND && wParam == ID_CLOSE)
-		{
 			SendMessage(mainHwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
-		}
+		else
+			SetForegroundWindow(mainHwnd);
 	}
 	else if (uMsg == WM_USER + 1337 && LOWORD(lParam) == WM_CONTEXTMENU)
 	{
