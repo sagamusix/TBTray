@@ -23,7 +23,7 @@ hiding the window and creating a tray icon.
 Halp, how do I quit Thunderbird?
 --------------------------------
 
-Through the File menu.
+Through the File menu, or the context menu.
 
 Is there any sort of configuration?
 -----------------------------------
