@@ -104,21 +104,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		HKEY hkey = nullptr;
 		RegCreateKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
+		bool ok = false;
 		if (hkey)
 		{
-			RegSetValueEx(hkey, _T("TBTray"), 0, REG_SZ, (BYTE *)path, (len + 1) * 2);
+			ok = RegSetValueEx(hkey, _T("TBTray"), 0, REG_SZ, (BYTE *)path, (len + 1) * 2) == ERROR_SUCCESS;
 			RegCloseKey(hkey);
+			MessageBox(nullptr, ok ? _T("TBTray has been successfully registered.") : _T("An error occurred while registering TBTray."), _T("TBTray"), MB_OK | MB_ICONINFORMATION);
 		}
+		return ok ? 0 : 1;
 	}
 	else if (argc > 1 && !wcscmp(argv[1], L"unregister"))
 	{
 		HKEY hkey = nullptr;
+		bool ok = false;
 		RegOpenKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
 		if (hkey)
 		{
-			RegDeleteValue(hkey, _T("TBTray"));
+			ok = RegDeleteValue(hkey, _T("TBTray")) == ERROR_SUCCESS;
 			RegCloseKey(hkey);
 		}
+		MessageBox(nullptr, ok ? _T("TBTray has been successfully unregistered.") : _T("An error occurred while unregistering TBTray. Maybe it was not registered?"), _T("TBTray"), MB_OK | MB_ICONINFORMATION);
+		return ok ? 0 : 1;
 	}
 
 
