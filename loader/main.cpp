@@ -1,8 +1,7 @@
 /*
- * Traktouch loader
+ * TBTray Loader by Johannes Schultz
  *
- * Finds the active Traktor window, or starts Traktor if there is no window yet,
- * then loads the companion DLL into Traktor via a Windows hook.
+ * Based on Traktouch by Joachim Fenkes:
  *
  * Copyright (c) 2019 by Joachim Fenkes <github@dojoe.net>
  *
