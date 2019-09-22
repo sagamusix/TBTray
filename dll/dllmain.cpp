@@ -30,9 +30,7 @@
 #include <shellapi.h>
 
 #include "guicon.h"
-
 #include <stdlib.h>
-#include <stdio.h>
 
 #ifdef _DEBUG
 #define dprintf printf
@@ -140,12 +138,12 @@ LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 		nid.uFlags = NIF_ICON | NIF_TIP | NIF_SHOWTIP | NIF_MESSAGE;
 		nid.uCallbackMessage = WM_USER + 1337;
 		nid.hIcon = (HICON)GetClassLongPtr(mainHwnd, GCLP_HICON);
-		_tcscpy(nid.szTip, _T("Mozilla Thunderbird"));
+		lstrcpy(nid.szTip, _T("Mozilla Thunderbird"));
 		nid.dwState = 0;
 		nid.dwStateMask = 0;
-		_tcscpy(nid.szInfo, _T(""));
+		lstrcpy(nid.szInfo, _T(""));
 		nid.uVersion = NOTIFYICON_VERSION_4;
-		_tcscpy(nid.szInfoTitle, _T(""));
+		lstrcpy(nid.szInfoTitle, _T(""));
 		nid.dwInfoFlags = 0;
 		nid.guidItem = {};
 		nid.hBalloonIcon = nid.hIcon;

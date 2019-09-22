@@ -3,7 +3,8 @@ TBTray - Native Win32 Thunderbird tray icon
 
 After the x-th reincarnation of the MinimizeToTray add-on for Thunderbird broke in Thunderbird 68,
 it seems like it becomes more and more difficult, if not impossible, to solve the issue at hand -
-keeping Thunderbird minimized in the notification area when closing or minimizing it.
+keeping Thunderbird minimized in the notification area when closing or minimizing it -
+using Web Extensions.
 
 I know that [BirdTray](https://github.com/gyunaev/birdtray) exists, and it's even cross-platform.
 However, it tries to solve way more problems than I have and uses Qt, so it's not

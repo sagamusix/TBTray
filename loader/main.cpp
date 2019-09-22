@@ -22,7 +22,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
 #include <tchar.h>
-#include <Shlwapi.h>
 
 
 TCHAR *GetErrorMessage()
@@ -40,7 +39,7 @@ static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 		TCHAR name[256] = {};
 		if(::GetClassName(hwnd, name, 256) > 0)
 		{
-			if(!_tcscmp(name, _T("MozillaWindowClass")))
+			if(!lstrcmp(name, _T("MozillaWindowClass")))
 			{
 				GetWindowText(hwnd, name, 256);
 				if(_tcsstr(name, _T("- Mozilla Thunderbird")))
@@ -68,7 +67,7 @@ static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
 	// Construct the DLL filename from our own filename, then attempt to load the DLL and find the entry hook
 	TCHAR dllName[1024];
 	int dllNameLen = GetModuleFileName(nullptr, dllName, _countof(dllName));
-	_tcscpy(dllName + dllNameLen - 3, _T("dll"));
+	lstrcpy(dllName + dllNameLen - 3, _T("dll"));
 	HMODULE dll = LoadLibrary(dllName);
 	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "_EntryHook@12");
 	if(!dll || !hookProc)
