@@ -1,8 +1,17 @@
 mkdir bin
-copy Release\dll.dll bin\TBTray.dll
-copy Release\loader.exe bin\TBTray.exe
 copy README.md bin
 copy LICENSE.txt bin
-echo TBTray register > bin\register.cmd
-echo TBTray unregister > bin\unregister.cmd
+
+mkdir bin\32-bit
+copy Win32\Release\dll.dll bin\32-bit\TBTray.dll
+copy Win32\Release\loader.exe bin\32-bit\TBTray.exe
+echo TBTray register > bin\32-bit\register.cmd
+echo TBTray unregister > bin\32-bit\unregister.cmd
+
+mkdir bin\64-bit
+copy x64\Release\dll.dll bin\64-bit\TBTray.dll
+copy x64\Release\loader.exe bin\64-bit\TBTray.exe
+echo TBTray register > bin\64-bit\register.cmd
+echo TBTray unregister > bin\64-bit\unregister.cmd
+
 pause

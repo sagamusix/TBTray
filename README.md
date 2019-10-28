@@ -1,14 +1,15 @@
 TBTray - Native Win32 Thunderbird tray icon
 ===========================================
 
-After the x-th reincarnation of the MinimizeToTray add-on for Thunderbird broke in Thunderbird 68,
-it seems like it becomes more and more difficult, if not impossible, to solve the issue at hand -
-keeping Thunderbird minimized in the notification area when closing or minimizing it -
-using Web Extensions.
+After the x-th reincarnation of the MinimizeToTray add-on for Thunderbird broke
+in Thunderbird 68, it seems like it becomes more and more difficult, if not
+impossible, to solve the issue at hand - keeping Thunderbird minimized in the
+notification area when closing or minimizing it - using Web Extensions.
 
-I know that [BirdTray](https://github.com/gyunaev/birdtray) exists, and it's even cross-platform.
-However, it tries to solve way more problems than I have and uses Qt, so it's not
-quite as light-weight as I think a background process should be.
+I know that [BirdTray](https://github.com/gyunaev/birdtray) exists, and it's
+even cross-platform. However, it tries to solve way more problems than I have
+and uses Qt (no offense, I really like the framework), so it's not quite as
+light-weight as I think a background process should be.
 
 So I decided to fork a program a friend of mine wrote - [traktouch](https://github.com/dop3j0e/traktouch),
 as it solves a very similar problem. I could have written it from scratch, but
@@ -24,6 +25,15 @@ To do this, TBTray checks for the presence of the Thunderbird main window, and i
 it finds the window, injects a library into the Thunderbird process to hook into
 the message queue. TBTray keeps running in the background, in case you want to
 restart Thunderbird at some point.
+
+It doesn't work for me!
+-----------------------
+
+The most likely cause is that you have `mail.tabs.drawInTitlebar` set to `true`
+(which is the default value) - setting it to `false` should solve that problem.
+
+Note: If you want to get this fixed, consider submitting a pull request - I do
+not have the time required to debug and fix a feature I am not using.
 
 Halp, how do I quit Thunderbird?
 --------------------------------

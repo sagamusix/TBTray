@@ -69,7 +69,7 @@ static void CALLBACK TimerProc(HWND, UINT, UINT_PTR idTimer, DWORD)
 	int dllNameLen = GetModuleFileName(nullptr, dllName, _countof(dllName));
 	lstrcpy(dllName + dllNameLen - 3, _T("dll"));
 	HMODULE dll = LoadLibrary(dllName);
-	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "_EntryHook@12");
+	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(dll, "EntryHook");
 	if(!dll || !hookProc)
 	{
 		MessageBox(nullptr, _T("Could not find the companion DLL. Make sure it's in the same directory as the EXE and has the same name."), _T("TBTray"), MB_ICONEXCLAMATION);
