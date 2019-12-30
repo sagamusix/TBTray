@@ -35,6 +35,8 @@ The most likely cause is that you have `mail.tabs.drawInTitlebar` set to `true`
 Note: If you want to get this fixed, consider submitting a pull request - I do
 not have the time required to debug and fix a feature I am not using.
 
+Also, use the build with the same bitness as Thunderbird.
+
 Halp, how do I quit Thunderbird?
 --------------------------------
 
