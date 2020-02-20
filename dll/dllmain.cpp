@@ -38,11 +38,9 @@
 #define dprintf(...)
 #endif
 
-/* Our GetMessage hook */
-HHOOK hMessageHook;
-
 static HWND mainHwnd = nullptr;
 static NOTIFYICONDATA nid = { 0 };
+static HWND trayHwnd = nullptr;
 
 enum CommandID
 {
@@ -50,12 +48,34 @@ enum CommandID
 	ID_CLOSE
 };
 
+static void ShowTray()
+{
+	// Show tray icon
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = trayHwnd;
+	nid.uID = 1337;
+	nid.uFlags = NIF_ICON | NIF_TIP | NIF_SHOWTIP | NIF_MESSAGE;
+	nid.uCallbackMessage = WM_USER + 1337;
+	nid.hIcon = (HICON)GetClassLongPtr(mainHwnd, GCLP_HICON);
+	lstrcpy(nid.szTip, _T("Mozilla Thunderbird"));
+	nid.dwState = 0;
+	nid.dwStateMask = 0;
+	lstrcpy(nid.szInfo, _T(""));
+	nid.uVersion = NOTIFYICON_VERSION_4;
+	lstrcpy(nid.szInfoTitle, _T(""));
+	nid.dwInfoFlags = 0;
+	nid.guidItem = {};
+	nid.hBalloonIcon = nid.hIcon;
+	Shell_NotifyIcon(NIM_ADD, &nid);
+	Shell_NotifyIcon(NIM_SETVERSION, &nid);
+}
+
 static LRESULT CALLBACK TrayIconProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if((uMsg == WM_USER + 1337 && LOWORD(lParam) == NIN_SELECT) || uMsg == WM_COMMAND)
 	{
 		// Restore main window
-		ShowWindow(mainHwnd, SW_SHOW);
+		ShowWindow(mainHwnd, SW_RESTORE);
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 		if (uMsg == WM_COMMAND && wParam == ID_CLOSE)
 			SendMessage(mainHwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
@@ -78,7 +98,6 @@ static LRESULT CALLBACK TrayIconProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 
 LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	static HWND trayHwnd = nullptr;
 	MSG &msg = *(MSG *)lParam;
 
 	if(mainHwnd == nullptr)
@@ -125,32 +144,37 @@ LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 
 	if(msg.hwnd == mainHwnd &&
 		(
-		(msg.message == WM_NCLBUTTONDOWN && (msg.wParam == HTCLOSE || msg.wParam == HTMINBUTTON))
+		(msg.message == WM_NCLBUTTONDOWN && msg.wParam == HTCLOSE)
 		||
-		(msg.message == WM_SYSCOMMAND && (msg.wParam == SC_CLOSE || msg.wParam == SC_MINIMIZE))
+		(msg.message == WM_SYSCOMMAND && msg.wParam == SC_CLOSE)
 		))
 	{
 		ShowWindow(msg.hwnd, SW_HIDE);
-		// Show tray icon
-		nid.cbSize = sizeof(nid);
-		nid.hWnd = trayHwnd;
-		nid.uID = 1337;
-		nid.uFlags = NIF_ICON | NIF_TIP | NIF_SHOWTIP | NIF_MESSAGE;
-		nid.uCallbackMessage = WM_USER + 1337;
-		nid.hIcon = (HICON)GetClassLongPtr(mainHwnd, GCLP_HICON);
-		lstrcpy(nid.szTip, _T("Mozilla Thunderbird"));
-		nid.dwState = 0;
-		nid.dwStateMask = 0;
-		lstrcpy(nid.szInfo, _T(""));
-		nid.uVersion = NOTIFYICON_VERSION_4;
-		lstrcpy(nid.szInfoTitle, _T(""));
-		nid.dwInfoFlags = 0;
-		nid.guidItem = {};
-		nid.hBalloonIcon = nid.hIcon;
-		Shell_NotifyIcon(NIM_ADD, &nid);
-		Shell_NotifyIcon(NIM_SETVERSION, &nid);
-		// Ignore this message
+		ShowTray();
+
 		msg.message = WM_NULL;
+	}
+
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+LRESULT CALLBACK WindowHook(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	CWPSTRUCT &msg = *(CWPSTRUCT *)lParam;
+
+	if (msg.hwnd == mainHwnd)
+	{
+		if (msg.message == WM_WINDOWPOSCHANGED)
+		{
+			// we won't receive WM_SIZE messages unless we DefWindowProc the WM_WINDOWPOSCHANGED message 
+			DefWindowProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+		}
+
+		if (msg.message == WM_SIZE && msg.wParam == SIZE_MINIMIZED)
+		{
+			ShowWindow(msg.hwnd, SW_HIDE);
+			ShowTray();
+		}
 	}
 
 	return CallNextHookEx(NULL, nCode, wParam, lParam);
@@ -182,7 +206,8 @@ extern "C" __declspec(dllexport) LRESULT CALLBACK EntryHook(int nCode, WPARAM wP
 		GetModuleFileName(hDLL, dllName, _countof(dllName));
 		LoadLibrary(dllName);
 #endif
-		hMessageHook = SetWindowsHookEx(WH_GETMESSAGE, MessageHook, NULL, GetCurrentThreadId());
+		SetWindowsHookEx(WH_GETMESSAGE, MessageHook, NULL, GetCurrentThreadId());
+		SetWindowsHookEx(WH_CALLWNDPROC, WindowHook, NULL, GetCurrentThreadId());
 		firstTime = false;
 	}
 
