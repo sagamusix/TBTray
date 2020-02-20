@@ -175,6 +175,10 @@ LRESULT CALLBACK WindowHook(int nCode, WPARAM wParam, LPARAM lParam)
 			ShowWindow(msg.hwnd, SW_HIDE);
 			ShowTray();
 		}
+
+		if (msg.message == WM_DESTROY) {
+			Shell_NotifyIcon(NIM_DELETE, &nid);
+		}
 	}
 
 	return CallNextHookEx(NULL, nCode, wParam, lParam);
