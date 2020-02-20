@@ -61,6 +61,8 @@ Halp, how do I quit Thunderbird?
 
 Through the File menu, or the context menu of the tray icon.
 
+Note that the context menu exit option will not work if you have the Minimize on Close extension installed, in which case you will have to exit through the file menu.
+
 Is there any sort of configuration?
 -----------------------------------
 
