@@ -52,19 +52,20 @@ it finds the window, injects a library into the Thunderbird process to hook into
 the message queue. TBTray keeps running in the background, in case you want to
 restart Thunderbird at some point.
 
-It doesn't work for me!
+The close button just closes Thunderbird!
 -----------------------
 
 The most likely cause is that you have `mail.tabs.drawInTitlebar` set to `true`
-(which is the default value) - setting it to `false` should solve that problem.
+(which is the default value).
 
-Note: If you want to get this fixed, consider submitting a pull request - I do
-not have the time required to debug and fix a feature I am not using.
+TBTray intercepts the close button by intercepting clicks in the non-client area (the title bar). This doesn't work when `drawInTitlebar` is `true`. A workaround for this is to install the [Minimize on Close](https://addons.thunderbird.net/en-us/thunderbird/addon/minimize-on-close/) extension, which uses client-side javascript to intercept the close event and minimize instead.
 
 Halp, how do I quit Thunderbird?
 --------------------------------
 
 Through the File menu, or the context menu of the tray icon.
+
+Note that the context menu exit option will not work if you have the Minimize on Close extension installed, in which case you will have to exit through the file menu.
 
 Is there any sort of configuration?
 -----------------------------------
