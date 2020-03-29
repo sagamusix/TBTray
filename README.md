@@ -58,6 +58,9 @@ It doesn't work for me!
 The most likely cause is that you have `mail.tabs.drawInTitlebar` set to `true`
 (which is the default value) - setting it to `false` should solve that problem.
 
+Workaround: If you close Thunderbird with the Alt + F4 key combination (not with
+the 'X' key) the application will minimize to the tray bar.
+
 Note: If you want to get this fixed, consider submitting a pull request - I do
 not have the time required to debug and fix a feature I am not using.
 
