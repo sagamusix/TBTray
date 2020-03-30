@@ -15,6 +15,32 @@ So I decided to fork a program a friend of mine wrote - [traktouch](https://gith
 as it solves a very similar problem. I could have written it from scratch, but
 this way I didn't have to write most of the boilerplate code.
 
+Installation
+------------
+
+Note: Requires _Microsoft Visual C++ Redistributable 2015_ or higher, with same bitness
+([x86](https://aka.ms/vs/16/release/VC_redist.x86.exe), [x64](https://aka.ms/vs/16/release/VC_redist.x64.exe))
+as your Thunderbird.
+
+1. Download the [latest TBTray release](https://github.com/sagamusix/TBTray/releases).
+2. Extract the archive anywhere you want, `%localappdata%\TBTray` would be a
+   good place for instance.
+   I would not recommend to put it in the same folder as Thunderbird, although
+   it should be possible in theory.
+3. Figure out whether you run a 32-bit or 64-bit version of Thunderbird.
+   If you are not sure, check whether Thunderbird is installed in
+   `Program Files` (64-bit on a 64-bit system, 32-bit on a 32-bit system) or
+   `Program Files (x86)` (32-bit on a 64-bit system).
+4. Launch the TBTray executable in the folder that **matches your Thunderbird
+   bitness**, i.e. if you run a 32-bit Thunderbird, then run `TBTray.exe` in the
+   32-bit folder of TBTray.
+5. To automatically start TBTray on Windows startup, run `register.cmd` in the
+   folder that **matches your Thunderbird bitness**, i.e. if you run a 32-bit
+   Thunderbird, then run `register.cmd` in the 32-bit folder of TBTray. 
+   If you ever decide to move the executable to a different location, you will
+   need to run `register.cmd` again.
+6. To completely uninstall, run `unregister.cmd` and delete the extracted files. 
+
 How does it work?
 -----------------
 
@@ -51,9 +77,3 @@ Is there any sort of configuration?
 This program does not come with any options, because it is just supposed to fix
 exactly the problem I had. Please fork the repository if you want the program to
 behave differently. 
-
-Autostart
----------
-
-To automatically start TBTray on Windows startup, run `register.cmd`.
-To uninstall, run `unregister.cmd`. 
