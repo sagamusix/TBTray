@@ -30,7 +30,12 @@ It doesn't work for me!
 -----------------------
 
 The most likely cause is that you have `mail.tabs.drawInTitlebar` set to `true`
-(which is the default value) - setting it to `false` should solve that problem.
+(which is the default value) - setting it to `false` through the
+[config editor](https://support.mozilla.org/en-US/kb/config-editor) should solve
+that problem.
+
+Alternatively, Alt + F4 still works intended - you can still keep using that
+shortcut to send Thunderbird to the notification area if you are used it.
 
 Note: If you want to get this fixed, consider submitting a pull request - I do
 not have the time required to debug and fix a feature I am not using.
