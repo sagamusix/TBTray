@@ -10,6 +10,9 @@ I know that [BirdTray](https://github.com/gyunaev/birdtray) exists, and it's
 even cross-platform. However, it tries to solve way more problems than I have
 and uses Qt (no offense, I really like the framework), so it's not quite as
 light-weight as I think a background process should be.
+Thunderbird 78 also finally comes with its own tray icon, but it
+[only works when minimizing the window](https://bugzilla.mozilla.org/show_bug.cgi?id=1666638),
+not when closing it.
 
 So I decided to fork a program a friend of mine wrote - [traktouch](https://github.com/dop3j0e/traktouch),
 as it solves a very similar problem. I could have written it from scratch, but
@@ -65,6 +68,12 @@ shortcut to send Thunderbird to the notification area if you are used it.
 
 Note: If you want to get this fixed, consider submitting a pull request - I do
 not have the time required to debug and fix a feature I am not using.
+
+There is also a second reason why the tool may sometimes not work correctly even
+if `mail.tabs.drawInTitlebar` is set to `false`: If Thunderbird shows a password
+prompt before the main window is even loaded, the tool may not work correctly.
+You should be able to work around that by restarting Thunderbird and then restart
+TBTray once Thunderbird's main window is visible.
 
 Halp, how do I quit Thunderbird?
 --------------------------------
