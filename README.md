@@ -21,7 +21,7 @@ this way I didn't have to write most of the boilerplate code.
 Installation
 ------------
 
-Note: Requires _Microsoft Visual C++ Redistributable 2015_ or higher, with same bitness
+Note: Requires _Microsoft Visual C++ 2015-2019 Redistributable_, with same bitness
 ([x86](https://aka.ms/vs/16/release/VC_redist.x86.exe), [x64](https://aka.ms/vs/16/release/VC_redist.x64.exe))
 as your Thunderbird.
 

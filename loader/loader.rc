@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "Thunderbird Tray Loader"
             VALUE "FileVersion", PRODUCTVERSTR
             VALUE "InternalName", "TBTray.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2020 Johannes Schultz"
+            VALUE "LegalCopyright", "Copyright (C) 2021 Johannes Schultz"
             VALUE "OriginalFilename", "TBTray.exe"
             VALUE "ProductName", "TBTray"
             VALUE "ProductVersion", PRODUCTVERSTR

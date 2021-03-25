@@ -34,7 +34,8 @@ TCHAR *GetErrorMessage()
 
 static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
-	if(hwnd)
+	// Only find resizable windows to avoid hooking password prompts etc.
+	if(hwnd && (GetWindowLong(hwnd, GWL_STYLE) & WS_SIZEBOX))
 	{
 		TCHAR name[256] = {};
 		if(::GetClassName(hwnd, name, 256) > 0)
