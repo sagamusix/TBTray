@@ -1,5 +1,5 @@
-TBTray - Native Win32 Thunderbird tray icon
-===========================================
+TBTray 2 - Native Win32 Thunderbird tray icon
+=============================================
 
 After the x-th reincarnation of the MinimizeToTray add-on for Thunderbird broke
 in Thunderbird 68, it seems like it becomes more and more difficult, if not
@@ -10,9 +10,13 @@ I know that [BirdTray](https://github.com/gyunaev/birdtray) exists, and it's
 even cross-platform. However, it tries to solve way more problems than I have
 and uses Qt (no offense, I really like the framework), so it's not quite as
 light-weight as I think a background process should be.
+
 Thunderbird 78 also finally comes with its own tray icon, but it
 [only works when minimizing the window](https://bugzilla.mozilla.org/show_bug.cgi?id=1666638),
-not when closing it.
+not when closing it. TBTray 0.10 used to provide its own tray icon, but TBTray
+2.0 instead makes use of Thunderbird's own tray icon, and merely intercepts the
+requests to close the window and turns them into requests to minimize the window
+instead.
 
 So I decided to fork a program a friend of mine wrote - [traktouch](https://github.com/dop3j0e/traktouch),
 as it solves a very similar problem. I could have written it from scratch, but
@@ -25,6 +29,7 @@ Note: Requires _Microsoft Visual C++ 2015-2019 Redistributable_, with same bitne
 ([x86](https://aka.ms/vs/16/release/VC_redist.x86.exe), [x64](https://aka.ms/vs/16/release/VC_redist.x64.exe))
 as your Thunderbird.
 
+0. Make sure that you are using Thunderbird 78 or later.
 1. Download the [latest TBTray release](https://github.com/sagamusix/TBTray/releases).
 2. Extract the archive anywhere you want, `%localappdata%\TBTray` would be a
    good place for instance.
@@ -48,7 +53,8 @@ How does it work?
 -----------------
 
 TBTray intercepts some window messages sent to Thunderbird, rejecting window
-minimize and close events and instead hiding the window and creating a tray icon.
+close events and instead minimizing the window, causing Thunderbird to make use
+of its tray icon.
 
 To do this, TBTray checks for the presence of the Thunderbird main window, and if
 it finds the window, injects a library into the Thunderbird process to hook into
@@ -69,16 +75,10 @@ shortcut to send Thunderbird to the notification area if you are used it.
 Note: If you want to get this fixed, consider submitting a pull request - I do
 not have the time required to debug and fix a feature I am not using.
 
-There is also a second reason why the tool may sometimes not work correctly even
-if `mail.tabs.drawInTitlebar` is set to `false`: If Thunderbird shows a password
-prompt before the main window is even loaded, the tool may not work correctly.
-You should be able to work around that by restarting Thunderbird and then restart
-TBTray once Thunderbird's main window is visible.
-
 Halp, how do I quit Thunderbird?
 --------------------------------
 
-Through the File menu, or the context menu of the tray icon.
+Through the File menu.
 
 Is there any sort of configuration?
 -----------------------------------
